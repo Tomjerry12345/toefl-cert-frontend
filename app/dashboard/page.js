@@ -222,7 +222,7 @@ export default function DashboardPage() {
                       </Link>
                       {cert.filePath && (
                         <a
-                          href={`http://localhost:5000/${cert.filePath}`}
+                          href={cert.filePath}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="text-xs text-emerald-600 hover:underline font-semibold flex items-center gap-1"
