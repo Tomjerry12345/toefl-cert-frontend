@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   LayoutDashboard,
   FilePlus,
@@ -8,6 +8,7 @@ import {
   ShieldCheck,
   XCircle,
   GraduationCap,
+  LogOut,
 } from "lucide-react";
 import clsx from "clsx";
 
@@ -21,10 +22,19 @@ const navItems = [
 
 export default function Sidebar() {
   const pathname = usePathname();
+  const router = useRouter();
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    // Hapus cookie
+    document.cookie = "token=; path=/; max-age=0";
+    router.push("/login");
+  };
 
   return (
     <aside
-      className="fixed left-0 top-0 h-full w-64 bg-navy-900 text-white flex flex-col z-50"
+      className="fixed left-0 top-0 h-full w-64 text-white flex flex-col z-50"
       style={{
         background: "linear-gradient(180deg, #0a1628 0%, #0d2040 100%)",
       }}
@@ -67,7 +77,14 @@ export default function Sidebar() {
       </nav>
 
       {/* Footer */}
-      <div className="px-6 py-4 border-t border-white/10">
+      <div className="px-4 py-4 border-t border-white/10">
+        <button
+          onClick={handleLogout}
+          className="w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium text-red-300 hover:bg-red-500/10 hover:text-red-200 transition-all duration-200 mb-3"
+        >
+          <LogOut size={18} />
+          Logout
+        </button>
         <p className="text-xs text-blue-400">Powered by</p>
         <p className="text-xs font-semibold text-blue-200">
           Ethereum Sepolia + Merkle Tree
