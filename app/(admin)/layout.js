@@ -1,11 +1,12 @@
-import './globals.css'
-import { Toaster } from 'react-hot-toast'
-import Sidebar from '@/components/layout/Sidebar'
+import "../globals.css";
+import { Toaster } from "react-hot-toast";
+import Sidebar from "@/components/layout/Sidebar";
 
 export const metadata = {
-  title: 'TOEFL Certificate Verification System',
-  description: 'Sistem Verifikasi Sertifikat TOEFL berbasis Blockchain Ethereum & Merkle Tree',
-}
+  title: "TOEFL Certificate Verification System",
+  description:
+    "Sistem Verifikasi Sertifikat TOEFL berbasis Blockchain Ethereum & Merkle Tree",
+};
 
 export default function RootLayout({ children }) {
   return (
@@ -20,5 +21,5 @@ export default function RootLayout({ children }) {
         <Toaster position="top-right" />
       </body>
     </html>
-  )
+  );
 }
