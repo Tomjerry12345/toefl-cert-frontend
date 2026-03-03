@@ -1,133 +1,91 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Eye, EyeOff, Lock, User, GraduationCap } from "lucide-react";
-import axios from "axios";
+import { useAuth } from "@/context/AuthContext";
+import {
+  GraduationCap,
+  Wallet,
+  ShieldCheck,
+  AlertCircle,
+  Loader2,
+} from "lucide-react";
 
 export default function LoginPage() {
+  const [status, setStatus] = useState("idle");
+  const [errorMsg, setErrorMsg] = useState("");
+  const { loginWithMetaMask } = useAuth();
   const router = useRouter();
-  const [form, setForm] = useState({ username: "", password: "" });
-  const [showPassword, setShowPassword] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError("");
-    setLoading(true);
+  const handleLogin = async () => {
+    setStatus("signing");
+    setErrorMsg("");
     try {
-      const res = await axios.post(
-        `${process.env.NEXT_PUBLIC_API_URL}/auth/login`,
-        { username: form.username, password: form.password },
-      );
-      if (res.data.success) {
-        const token = res.data.data.token;
-        // Simpan ke localStorage dan cookie
-        localStorage.setItem("token", token);
-        localStorage.setItem("user", JSON.stringify(res.data.data.user));
-        // Simpan ke cookie untuk middleware
-        document.cookie = `token=${token}; path=/; max-age=${60 * 60 * 24}`;
-        router.push("/dashboard");
-      }
+      await loginWithMetaMask();
+      router.push("/dashboard");
     } catch (err) {
-      setError(err.response?.data?.message || "Login gagal, coba lagi");
-    } finally {
-      setLoading(false);
+      setStatus("error");
+      setErrorMsg(
+        err?.response?.data?.message || err?.message || "Login gagal",
+      );
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-      <div className="w-full max-w-sm">
-        {/* Logo */}
-        <div className="text-center mb-8">
-          <div className="w-16 h-16 rounded-2xl bg-primary-700 flex items-center justify-center mx-auto mb-4 shadow-lg">
-            <GraduationCap size={30} className="text-white" />
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#0a1628] to-[#0d2040]">
+      <div className="w-full max-w-md px-6">
+        <div className="bg-white/5 border border-white/10 rounded-2xl p-8 backdrop-blur-sm shadow-2xl">
+          <div className="flex flex-col items-center mb-8">
+            <div className="w-16 h-16 rounded-2xl bg-blue-600 flex items-center justify-center shadow-lg mb-4">
+              <GraduationCap size={32} className="text-white" />
+            </div>
+            <h1 className="text-2xl font-bold text-white">TOEFL Cert System</h1>
+            <p className="text-blue-300 text-sm mt-1">Admin Panel</p>
           </div>
-          <h1 className="text-xl font-bold text-gray-900">
-            TOEFL Certificate System
-          </h1>
-          <p className="text-gray-500 text-sm mt-1">
-            Masuk ke panel administrasi
-          </p>
-        </div>
-
-        {/* Card */}
-        <div className="card">
-          {error && (
-            <div className="mb-4 p-3 rounded-lg bg-red-50 border border-red-200 text-red-600 text-sm text-center">
-              {error}
+          <div className="bg-blue-900/30 border border-blue-500/30 rounded-xl p-4 mb-6 flex gap-3">
+            <ShieldCheck size={20} className="text-blue-400 shrink-0 mt-0.5" />
+            <p className="text-blue-200 text-sm">
+              Login menggunakan <strong>MetaMask</strong>. Hubungkan wallet
+              manapun untuk masuk.
+            </p>
+          </div>
+          {status === "error" && (
+            <div className="bg-red-900/30 border border-red-500/30 rounded-xl p-4 mb-6 flex gap-3">
+              <AlertCircle size={20} className="text-red-400 shrink-0 mt-0.5" />
+              <p className="text-red-200 text-sm">{errorMsg}</p>
             </div>
           )}
-
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label className="label">Username</label>
-              <div className="relative">
-                <User
-                  size={16}
-                  className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
-                />
-                <input
-                  type="text"
-                  className="input pl-9"
-                  placeholder="Masukkan username"
-                  value={form.username}
-                  onChange={(e) =>
-                    setForm({ ...form, username: e.target.value })
-                  }
-                  required
-                />
-              </div>
+          {status === "signing" && (
+            <div className="bg-yellow-900/20 border border-yellow-500/20 rounded-xl p-4 mb-6 flex items-center gap-3">
+              <Loader2 size={18} className="text-yellow-400 animate-spin" />
+              <p className="text-yellow-200 text-sm">
+                Tunggu, tanda tangani pesan di MetaMask...
+              </p>
             </div>
-
-            <div>
-              <label className="label">Password</label>
-              <div className="relative">
-                <Lock
-                  size={16}
-                  className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
-                />
-                <input
-                  type={showPassword ? "text" : "password"}
-                  className="input pl-9 pr-10"
-                  placeholder="Masukkan password"
-                  value={form.password}
-                  onChange={(e) =>
-                    setForm({ ...form, password: e.target.value })
-                  }
-                  required
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                >
-                  {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
-                </button>
-              </div>
-            </div>
-
-            <button
-              type="submit"
-              className="btn-primary w-full justify-center mt-2"
-              disabled={loading}
+          )}
+          <button
+            onClick={handleLogin}
+            disabled={status === "signing"}
+            className="w-full flex items-center justify-center gap-3 px-6 py-3.5 rounded-xl bg-blue-600 hover:bg-blue-500 disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold text-sm transition-all"
+          >
+            {status === "signing" ? (
+              <Loader2 size={20} className="animate-spin" />
+            ) : (
+              <Wallet size={20} />
+            )}
+            {status === "signing" ? "Memproses..." : "Login dengan MetaMask"}
+          </button>
+          <p className="text-center text-blue-400/60 text-xs mt-4">
+            Belum punya MetaMask?{" "}
+            <a
+              href="https://metamask.io"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-400 underline"
             >
-              {loading ? (
-                <>
-                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                  Masuk...
-                </>
-              ) : (
-                "Masuk"
-              )}
-            </button>
-          </form>
+              Download di sini
+            </a>
+          </p>
         </div>
-
-        <p className="text-center text-xs text-gray-400 mt-4">
-          UIN Alauddin Makassar · Sistem Verifikasi Sertifikat TOEFL
-        </p>
       </div>
     </div>
   );

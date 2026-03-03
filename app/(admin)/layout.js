@@ -1,25 +1,15 @@
-import "../globals.css";
-import { Toaster } from "react-hot-toast";
 import Sidebar from "@/components/layout/Sidebar";
+import AuthGuard from "@/components/auth/AuthGuard";
 
-export const metadata = {
-  title: "TOEFL Certificate Verification System",
-  description:
-    "Sistem Verifikasi Sertifikat TOEFL berbasis Blockchain Ethereum & Merkle Tree",
-};
-
-export default function RootLayout({ children }) {
+export default function AdminLayout({ children }) {
   return (
-    <html lang="id">
-      <body>
-        <div className="flex min-h-screen">
-          <Sidebar />
-          <main className="flex-1 ml-64 p-8 bg-gray-50 min-h-screen">
-            {children}
-          </main>
-        </div>
-        <Toaster position="top-right" />
-      </body>
-    </html>
+    <AuthGuard>
+      <div className="flex min-h-screen">
+        <Sidebar />
+        <main className="flex-1 ml-64 p-8 bg-gray-50 min-h-screen">
+          {children}
+        </main>
+      </div>
+    </AuthGuard>
   );
 }

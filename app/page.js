@@ -1,5 +1,21 @@
-import { redirect } from "next/navigation";
+'use client'
+import { useEffect } from 'react'
+import { useRouter } from 'next/navigation'
+import { useAuth } from '@/context/AuthContext'
 
 export default function Home() {
-  redirect("/login");
+  const { isAuthenticated, loading } = useAuth()
+  const router = useRouter()
+
+  useEffect(() => {
+    if (!loading) {
+      if (isAuthenticated) {
+        router.replace('/dashboard')
+      } else {
+        router.replace('/login')
+      }
+    }
+  }, [loading, isAuthenticated, router])
+
+  return null
 }
