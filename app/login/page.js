@@ -77,7 +77,7 @@ export default function LoginPage() {
           <p className="text-center text-blue-400/60 text-xs mt-4">
             Belum punya MetaMask?{" "}
             <a
-              href="https://metamask.io"
+              href="https://metamask.io/download"
               target="_blank"
               rel="noopener noreferrer"
               className="text-blue-400 underline"
